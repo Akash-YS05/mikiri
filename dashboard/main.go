@@ -332,184 +332,288 @@ const dashboardHTML = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mikiri Analytics Dashboard</title>
+<title>Mikiri Analytics</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --border: #2a2d3a;
-    --accent: #6c63ff;
-    --accent2: #00d4aa;
-    --text: #e2e8f0;
-    --muted: #718096;
-    --red: #fc5c65;
-    --bar-h: 18px;
-  }
-  body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; padding: 24px; }
-  h1 { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
-  .subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-  .card-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
-  .card-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
-  .card-value.green { color: var(--accent2); }
-  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-  .section-title { font-size: 0.9rem; font-weight: 600; color: var(--muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: .06em; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-  th { text-align: left; color: var(--muted); font-weight: 500; padding: 4px 8px 10px 0; border-bottom: 1px solid var(--border); }
-  td { padding: 8px 8px 8px 0; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  .bar-wrap { background: var(--border); border-radius: 4px; height: var(--bar-h); overflow: hidden; min-width: 80px; }
-  .bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .4s ease; }
-  .bar-fill.green { background: var(--accent2); }
-  .histogram { display: flex; align-items: flex-end; gap: 4px; height: 100px; }
-  .h-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .h-bar { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; transition: height .4s ease; min-height: 2px; }
-  .h-label { font-size: 0.6rem; color: var(--muted); white-space: nowrap; }
-  .types { display: flex; flex-wrap: wrap; gap: 8px; }
-  .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-  .badge.pageview { background: rgba(108,99,255,.2); color: var(--accent); }
-  .badge.api_call  { background: rgba(0,212,170,.2); color: var(--accent2); }
-  .badge.error     { background: rgba(252,92,101,.2); color: var(--red); }
-  .badge.click     { background: rgba(255,200,80,.2); color: #ffc850; }
-  #status { font-size: 0.75rem; color: var(--muted); margin-top: 16px; }
-  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); margin-right: 4px; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  @media(max-width:700px) { .two-col { grid-template-columns: 1fr; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: radial-gradient(circle at 20% 0%, #1a1d27, #0f1117 60%);
+  --surface: rgba(26,29,39,0.6);
+  --border: rgba(255,255,255,0.06);
+  --accent: #6c63ff;
+  --accent2: #00d4aa;
+  --text: #e6edf3;
+  --muted: #8b93a7;
+  --red: #ff5d5d;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 32px;
+}
+
+.header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:32px;
+}
+
+h1 { font-size:1.8rem; font-weight:700; }
+
+.subtitle {
+  font-size:0.9rem;
+  color: var(--muted);
+  margin-top:4px;
+}
+
+.live-pill {
+  padding:6px 14px;
+  border-radius:999px;
+  background: rgba(0,212,170,.1);
+  color: var(--accent2);
+  font-size:0.75rem;
+  font-weight:600;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+  gap:18px;
+  margin-bottom:28px;
+}
+
+.card {
+  background: var(--surface);
+  backdrop-filter: blur(16px);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px;
+  transition: all .25s ease;
+}
+
+.card:hover { transform: translateY(-4px); }
+
+.card-label {
+  font-size:0.75rem;
+  color: var(--muted);
+  margin-bottom:8px;
+}
+
+.card-value {
+  font-size:2rem;
+  font-weight:700;
+}
+
+.green { color: var(--accent2); }
+.red { color: var(--red); }
+
+.section {
+  background: var(--surface);
+  backdrop-filter: blur(16px);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:22px;
+  margin-bottom:22px;
+}
+
+.section-title {
+  font-size:0.8rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  margin-bottom:16px;
+}
+
+table { width:100%; border-collapse:collapse; }
+
+td, th { padding:10px 0; }
+
+th {
+  font-size:0.75rem;
+  color:var(--muted);
+  font-weight:500;
+}
+
+tr { border-bottom:1px solid var(--border); }
+tr:last-child { border:none; }
+
+.bar-wrap {
+  background: rgba(255,255,255,0.05);
+  border-radius:6px;
+  height:10px;
+}
+
+.bar-fill {
+  height:100%;
+  border-radius:6px;
+  background: linear-gradient(90deg, var(--accent), #9d8cff);
+}
+
+.bar-fill.green {
+  background: linear-gradient(90deg, var(--accent2), #00ffcc);
+}
+
+.histogram {
+  display:flex;
+  gap:6px;
+  height:120px;
+  align-items:flex-end;
+}
+
+.h-bar {
+  flex:1;
+  background: linear-gradient(180deg, var(--accent), transparent);
+  border-radius:4px 4px 0 0;
+}
+
+.two-col {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+@media(max-width:800px){
+  .two-col { grid-template-columns:1fr; }
+}
+
+#status {
+  font-size:0.75rem;
+  color:var(--muted);
+  margin-top:12px;
+}
+
+.dot {
+  width:8px;height:8px;border-radius:50%;
+  background:var(--accent2);
+  display:inline-block;
+  margin-right:6px;
+  animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%,100%{opacity:1}
+  50%{opacity:.4}
+}
 </style>
 </head>
+
 <body>
-<h1>⚡ Mikiri Analytics</h1>
-<p class="subtitle">Real-time event pipeline · Redis Streams</p>
+
+<div class="header">
+  <div>
+    <h1>Mikiri Analytics</h1>
+    <div class="subtitle">Real-time event intelligence</div>
+  </div>
+  <div class="live-pill"><span class="dot"></span>LIVE</div>
+</div>
 
 <div class="grid">
-  <div class="card">
-    <div class="card-label">Total Events</div>
-    <div class="card-value" id="total">—</div>
-  </div>
-  <div class="card">
-    <div class="card-label">Avg Latency</div>
-    <div class="card-value green" id="latency">—</div>
-  </div>
-  <div class="card">
-    <div class="card-label">Pageviews</div>
-    <div class="card-value" id="t-pageview">—</div>
-  </div>
-  <div class="card">
-    <div class="card-label">API Calls</div>
-    <div class="card-value" id="t-api_call">—</div>
-  </div>
-  <div class="card">
-    <div class="card-label">Errors</div>
-    <div class="card-value" style="color:var(--red)" id="t-error">—</div>
-  </div>
-  <div class="card">
-    <div class="card-label">Clicks</div>
-    <div class="card-value" id="t-click">—</div>
-  </div>
+  <div class="card"><div class="card-label">Total Events</div><div class="card-value" id="total">—</div></div>
+  <div class="card"><div class="card-label">Avg Latency</div><div class="card-value green" id="latency">—</div></div>
+  <div class="card"><div class="card-label">Pageviews</div><div class="card-value" id="t-pageview">—</div></div>
+  <div class="card"><div class="card-label">API Calls</div><div class="card-value" id="t-api_call">—</div></div>
+  <div class="card"><div class="card-label">Errors</div><div class="card-value red" id="t-error">—</div></div>
+  <div class="card"><div class="card-label">Clicks</div><div class="card-value" id="t-click">—</div></div>
 </div>
 
 <div class="section">
-  <div class="section-title">Events last 24 hours</div>
+  <div class="section-title">Events (24h)</div>
   <div class="histogram" id="histogram"></div>
 </div>
 
 <div class="two-col">
   <div class="section">
-    <div class="section-title">Top 10 Pages</div>
-    <table>
-      <thead><tr><th>URL</th><th>Hits</th><th style="width:120px"></th></tr></thead>
-      <tbody id="pages-body"></tbody>
-    </table>
+    <div class="section-title">Top Pages</div>
+    <table><tbody id="pages-body"></tbody></table>
   </div>
   <div class="section">
-    <div class="section-title">Top 10 Users</div>
-    <table>
-      <thead><tr><th>User</th><th>Events</th><th style="width:120px"></th></tr></thead>
-      <tbody id="users-body"></tbody>
-    </table>
+    <div class="section-title">Top Users</div>
+    <table><tbody id="users-body"></tbody></table>
   </div>
 </div>
 
 <div class="section">
   <div class="section-title">Error URLs</div>
-  <table>
-    <thead><tr><th>URL</th><th>Count</th></tr></thead>
-    <tbody id="errors-body"></tbody>
-  </table>
+  <table><tbody id="errors-body"></tbody></table>
 </div>
 
-<div id="status">Connecting…</div>
+<div id="status">Connecting...</div>
 
 <script>
-const fmt = n => Number(n).toLocaleString();
+function fmt(n){ return Number(n).toLocaleString(); }
 
-function renderLeader(tbodyId, rows, maxScore) {
-  const tbody = document.getElementById(tbodyId);
-  tbody.innerHTML = rows.map(r => {
-    const pct = maxScore > 0 ? (r.score / maxScore * 100).toFixed(1) : 0;
-    const cls = tbodyId === 'users-body' ? 'green' : '';
-    return '<tr>' +
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+}
+
+function renderLeader(id, rows, max){
+  var el = document.getElementById(id);
+  var html = '';
+  for (var i=0;i<rows.length;i++){
+    var r = rows[i];
+    var pct = max ? (r.score/max*100) : 0;
+    html += '<tr>' +
       '<td>' + escHtml(r.name) + '</td>' +
       '<td>' + fmt(r.score) + '</td>' +
-      '<td><div class="bar-wrap"><div class="bar-fill ' + cls + '" style="width:' + pct + '%"></div></div></td>' +
+      '<td><div class="bar-wrap"><div class="bar-fill ' + (id==='users-body'?'green':'') + '" style="width:' + pct + '%"></div></div></td>' +
       '</tr>';
-  }).join('');
+  }
+  el.innerHTML = html;
 }
 
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function renderHistogram(data){
+  var el = document.getElementById('histogram');
+  if(!data) return;
+  var max = 1;
+  for (var i=0;i<data.length;i++){
+    if (data[i].count > max) max = data[i].count;
+  }
+  var html = '';
+  for (var i=0;i<data.length;i++){
+    var h = data[i].count/max*100;
+    html += '<div class="h-bar" style="height:' + h + '%"></div>';
+  }
+  el.innerHTML = html;
 }
 
-function renderHistogram(hourly) {
-  const el = document.getElementById('histogram');
-  if (!hourly || !hourly.length) return;
-  const max = Math.max(...hourly.map(h => h.count), 1);
-  el.innerHTML = hourly.map(h => {
-    const pct = (h.count / max * 90).toFixed(1);
-    return '<div class="h-bar-wrap">' +
-      '<div class="h-bar" style="height:' + pct + 'px" title="' + h.hour + ': ' + h.count + '"></div>' +
-      '<div class="h-label">' + h.hour.split(':')[0] + '</div>' +
-      '</div>';
-  }).join('');
+function renderErrors(map){
+  var el = document.getElementById('errors-body');
+  var html = '';
+  for (var k in map){
+    html += '<tr><td>' + escHtml(k) + '</td><td>' + fmt(map[k]) + '</td></tr>';
+  }
+  el.innerHTML = html;
 }
 
-function renderErrors(errMap) {
-  const tbody = document.getElementById('errors-body');
-  const entries = Object.entries(errMap || {}).sort((a,b) => b[1]-a[1]);
-  if (!entries.length) { tbody.innerHTML = '<tr><td colspan="2" style="color:var(--muted)">No errors recorded</td></tr>'; return; }
-  tbody.innerHTML = entries.map(([url, cnt]) =>
-    '<tr><td>' + escHtml(url) + '</td><td>' + fmt(cnt) + '</td></tr>'
-  ).join('');
-}
+function update(d){
+  document.getElementById('total').textContent = fmt(d.total_events);
+  document.getElementById('latency').textContent = (d.avg_latency_ms||0).toFixed(1)+'ms';
 
-function update(data) {
-  document.getElementById('total').textContent   = fmt(data.total_events);
-  document.getElementById('latency').textContent = (data.avg_latency_ms || 0).toFixed(1) + 'ms';
-  ['pageview','api_call','error','click'].forEach(t => {
-    const el = document.getElementById('t-' + t);
-    if (el) el.textContent = fmt((data.by_type || {})[t] || 0);
-  });
+  var types = ['pageview','api_call','error','click'];
+  for (var i=0;i<types.length;i++){
+    var t = types[i];
+    document.getElementById('t-'+t).textContent = fmt((d.by_type||{})[t]||0);
+  }
 
-  const pages = data.top_pages || [];
-  renderLeader('pages-body', pages, pages.length ? pages[0].score : 0);
+  renderLeader('pages-body', d.top_pages||[], d.top_pages && d.top_pages[0] ? d.top_pages[0].score : 0);
+  renderLeader('users-body', d.top_users||[], d.top_users && d.top_users[0] ? d.top_users[0].score : 0);
+  renderHistogram(d.hourly);
+  renderErrors(d.errors_by_url);
 
-  const users = data.top_users || [];
-  renderLeader('users-body', users, users.length ? users[0].score : 0);
-
-  renderHistogram(data.hourly);
-  renderErrors(data.errors_by_url);
-
-  const lu = data.last_updated ? new Date(data.last_updated * 1000).toLocaleTimeString() : '—';
   document.getElementById('status').innerHTML =
-    '<span class="dot"></span>Live · last updated ' + lu;
+    '<span class="dot"></span>Live - ' + new Date().toLocaleTimeString();
 }
 
-const es = new EventSource('/live');
-es.onmessage = e => { try { update(JSON.parse(e.data)); } catch(_){} };
-es.onerror   = () => { document.getElementById('status').textContent = 'Reconnecting…'; };
+var es = new EventSource('/live');
+es.onmessage = function(e){ try { update(JSON.parse(e.data)); } catch(err){} };
+es.onerror = function(){ document.getElementById('status').textContent = 'Reconnecting...'; };
 </script>
+
 </body>
 </html>`
