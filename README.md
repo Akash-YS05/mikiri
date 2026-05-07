@@ -1,5 +1,16 @@
 # mikiri
 
+```
+           _ _    _      _ 
+          (_) |  (_)    (_)
+ _ __ ___  _| | ___ _ __ _ 
+| '_ ` _ \| | |/ / | '__| |
+| | | | | | |   <| | |  | |
+|_| |_| |_|_|_|\_\_|_|  |_|
+                           
+                           
+```
+
 A production-quality real-time analytics pipeline built in Go, using Redis Streams as the sole communication layer between three independent binaries.
 
 ---
